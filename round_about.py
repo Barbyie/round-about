@@ -1,6 +1,7 @@
 import os
 import subprocess
 import datetime
+import sys
 
 map_name = "world"
 backupfolder_name = "roundabout-backups"
@@ -19,12 +20,42 @@ def createBackup():
     current_time = datetime.datetime.now()
     formatted_time = current_time.strftime("%y-%m-%d-%I-%M-%p")
     #current_time will get the current time and formatted_time will format the time in YY-MM-DD-HH-MM-AM/PM.
-    compress_map = "zip -rX {backup_path}/world-{formatted_time}.zip {map_path}".format(backup_path=backup_path,formatted_time=formatted_time, map_path=map_path)
-    compress_exec = subprocess.run(compress_map, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    #compress_map creates the command that will be executed, and compress_exec runs the command.
 
-    if compress_exec.returncode == 0:
-        return 0
+    compress_map = "zip -rX {backup_path}/world-{formatted_time}.zip {map_path}".format(backup_path=backup_path,formatted_time=formatted_time, map_path=map_path)
+    try:
+        compress_exec = subprocess.run(compress_map, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        print("Backup created successfully at " + formatted_time)
+    except subprocess.CalledProcessError as error_message:
+        print("Backup creating failed with error:\n", error_message.stdout)
+    #compress_map creates the command that will be executed, and compress_exec runs the command.
+    #If the command throws an error, it will display it with the subprocess.CalledProcessError.
+
+
+
+if os.path.exists(backup_path):
+  
+    createBackup()
+    # If the Backup folder already exists, it will create the backup.
+else:
+   
+    print("Backup folder does not exist yet, creating it...")
+    create_directory_command = "mkdir " + backup_path
+    create_directory = subprocess.run(create_directory_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    # If the Backup folder does not exist, it will try to create one before running the backup.
+
+    if create_directory.returncode == 0:
+        
+        print("Backup folder created successfully.")
+        createBackup()
+    
+    else:
+
+        print("Failed to create the folder, ending the program.")
+        sys.exit(1)
+        #This will force the program to stop in case the folder is not able to be created.
+
+
+        
     
 
 
