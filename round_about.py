@@ -1,6 +1,7 @@
 import os
 import subprocess
 import datetime
+import time
 import sys
 
 map_name = "world"
@@ -17,20 +18,30 @@ backup_path = os.path.join(script_directory, backupfolder_name)
 
 def createBackup():
 
-    current_time = datetime.datetime.now()
-    formatted_time = current_time.strftime("%y-%m-%d-%I-%M-%p")
-    #current_time will get the current time and formatted_time will format the time in YY-MM-DD-HH-MM-AM/PM.
+    time_running = 300
+    #Every X time another backup will be generated.
 
-    compress_map = "zip -rX {backup_path}/world-{formatted_time}.zip {map_path}".format(backup_path=backup_path,formatted_time=formatted_time, map_path=map_path)
-    try:
-        compress_exec = subprocess.run(compress_map, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-        print("Backup created successfully at " + formatted_time)
-    except subprocess.CalledProcessError as error_message:
-        print("Backup creating failed with error:\n", error_message.stdout)
-    #compress_map creates the command that will be executed, and compress_exec runs the command.
-    #If the command throws an error, it will display it with the subprocess.CalledProcessError.
+    while True:
 
+        current_time = datetime.datetime.now()
+        formatted_time = current_time.strftime("%y-%m-%d-%I-%M-%S-%p")
+        #current_time will get the current time and formatted_time will format the time in YY-MM-DD-HH-MM-SS-AM/PM.
 
+        compress_map = "zip -rX {backup_path}/world-{formatted_time}.zip {map_path}".format(backup_path=backup_path,formatted_time=formatted_time, map_path=map_path)
+        
+        try:
+
+            compress_exec = subprocess.run(compress_map, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+            print("Backup created successfully at " + formatted_time)
+
+        except subprocess.CalledProcessError as error_message:
+
+            print("Backup creating failed with error:\n", error_message.stdout)
+            sys.exit(1)
+        #compress_map creates the command that will be executed, and compress_exec runs the command.
+        #If the command throws an error, it will display it with the subprocess.CalledProcessError.
+
+        time.sleep(time_running)
 
 if os.path.exists(backup_path):
   
