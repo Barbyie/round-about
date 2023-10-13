@@ -3,9 +3,20 @@ import subprocess
 import datetime
 import time
 import sys
+import pickle
 
-map_name = "world"
-backupfolder_name = "roundabout-backups"
+try:
+    with open('variables.pk1', 'rb') as file:
+        name_map, backup_folder_name = pickle.load(file)
+        #This will open the variables.pk1 file and grab the arguments that are inside.
+
+except FileNotFoundError:
+    name_map = None
+    backup_folder_name = None
+    #In case the file is not found, both variables will be empty.
+
+map_name = name_map
+backupfolder_name = backup_folder_name
 #This variable defines the name of the Map and the Backup Folder.
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +38,7 @@ def createBackup():
         formatted_time = current_time.strftime("%y-%m-%d-%I-%M-%S-%p")
         #current_time will get the current time and formatted_time will format the time in YY-MM-DD-HH-MM-SS-AM/PM.
 
-        compress_map = "zip -rX {backup_path}/world-{formatted_time}.zip {map_path}".format(backup_path=backup_path,formatted_time=formatted_time, map_path=map_path)
+        compress_map = "zip -rX {backup_path}/{map_name}-{formatted_time}.zip {map_path}".format(backup_path=backup_path,formatted_time=formatted_time, map_path=map_path, map_name=map_name)
         
         try:
 
