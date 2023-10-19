@@ -1,6 +1,7 @@
 import os
 import subprocess
 import datetime
+import signal
 import time
 import sys
 import pickle
@@ -17,12 +18,22 @@ except FileNotFoundError:
     backup_folder_name = None
     backup_path_folder = None
     backup_frequency = None
-    #In case the file is not found, both variables will be empty.
+    #In case these files are not found, all variables will be empty.
 
 complete_backup_path = f"{backup_path_folder}{backup_folder_name}"
 
 #This variable defines the complete path of the Backup Folder.
 
+def sigterm_handler(signum, frame):
+    
+    print("Received EXIT signal. Exiting the program...")
+    print(signum) #TEST
+    print(frame) #TEST
+    sys.exit(0)
+    #This function detects that signal number (in this case SIGTERM) and stops the program when called.
+
+signal.signal(signal.SIGTERM, sigterm_handler)
+#When the SIGTERM is sent, it will call the function sigterm_handler, and exit the program.
 
 def createBackup():
 
@@ -47,7 +58,9 @@ def createBackup():
         #compress_map creates the command that will be executed, and compress_exec runs the command.
         #If the command throws an error, it will display it with the subprocess.CalledProcessError.
 
-        time.sleep(int(backup_frequency))
+        time.sleep(backup_frequency)
+
+
 
 if os.path.exists(complete_backup_path):
   
