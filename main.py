@@ -23,16 +23,17 @@ class Backup:
 
     def check_if_destination_folder_exists(self):
         if os.path.exists(self.destination):
-            return self.trigger()
+            print("Backup folder already exists.")
         else:
-            print("Backup folder does not exist yet, creating it:")
-            create_destination = f"mkdir -p {self.destination}"
-            run_create = subprocess.run(create_destination, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if run_create.returncode == 0:
+            print("Backup folder does not exist yet, creating it.")
+            try:
+                os.makedirs(self.destination)
                 print("Backup folder created successfully.")
-            else:
-                print("Failed to create the folder, ending the program")
+            except OSError as error:
+                print(f"Failed to create the folder with the error:\n{error}")
+                print("Exiting the program.")
                 sys.exit(1)
+
 class Time:
 
     def __init__(self):
@@ -40,7 +41,10 @@ class Time:
         self.formatted_time = current_time.strftime("%y-%m-%d-%I-%M-%S-%p")
 
 
-call_backup = Backup(name="thiago")
+call_backup = Backup(name="thiago", destination="/var/log/test")
 call_backup.check_if_destination_folder_exists()
 call_backup.trigger()
 
+# create_destination = f"mkdir -p {self.destination}"
+# run_create = subprocess.run(create_destination, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+# error_message_folder = subprocess.CalledProcessError
