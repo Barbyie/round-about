@@ -3,7 +3,7 @@ import subprocess
 import datetime
 import sys
 import logging
-
+import signal
 class Backup:
 
     def __init__(self, name, origin=os.path.dirname(__file__) + "/world",
@@ -57,6 +57,17 @@ class Logs:
         logger = logging.getLogger(__name__)
         logger.debug(log_message)
 
+class SignalReceiver:
+
+    def __init__(self):
+        signal.signal(signal.SIGTERM, self.sigterm_handler)
+    def sigterm_handler(self, signum, frame):
+        self.log = Logs()
+        print("Received EXIT signal. Exiting the program.")
+        self.log.create_logs("Received EXIT signal. Exiting the program.")
+        sys.exit(0)
+
+signal_detector = SignalReceiver()
 
 call_backup = Backup(name="thiago")
 call_backup.check_if_destination_folder_exists()
