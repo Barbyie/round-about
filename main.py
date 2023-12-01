@@ -4,10 +4,11 @@ import datetime
 import sys
 import logging
 import signal
+import time
 class Backup:
 
     def __init__(self, name, origin=os.path.dirname(__file__) + "/world",
-                 destination=os.path.dirname(__file__) + "/thiago"):
+                 destination=os.path.dirname(__file__) + "/roundabout"):
         self.name = name
         self.origin = origin
         self.destination = destination
@@ -61,6 +62,7 @@ class SignalReceiver:
 
     def __init__(self):
         signal.signal(signal.SIGTERM, self.sigterm_handler)
+        signal.signal(signal.SIGINT, self.sigterm_handler)
     def sigterm_handler(self, signum, frame):
         self.log = Logs()
         print("Received EXIT signal. Exiting the program.")
@@ -68,9 +70,11 @@ class SignalReceiver:
         sys.exit(0)
 
 signal_detector = SignalReceiver()
-
 call_backup = Backup(name="thiago")
 call_backup.check_if_destination_folder_exists()
-call_backup.trigger()
+while True:
+    call_backup.trigger()
+    time.sleep(60)
+
 
 
