@@ -5,10 +5,24 @@ import sys
 import logging
 import signal
 import time
+import pickle
+
+
+map_folder_name = None
+backup_folder_name = None
+
+try:
+    with open('parameters.pk1', 'rb') as file:
+        backup_path_folder, map_folder_name, backup_frequency = pickle.load(file)
+except FileNotFoundError:
+    backup_path_folder = None
+    map_folder_name = None
+    backup_frequency = None
+
+
 class Backup:
 
-    def __init__(self, name, origin=os.path.dirname(__file__) + "/world",
-                 destination=os.path.dirname(__file__) + "/roundabout"):
+    def __init__(self, name, origin=map_folder_name, destination=backup_path_folder):
         self.name = name
         self.origin = origin
         self.destination = destination
@@ -70,7 +84,8 @@ class SignalReceiver:
         sys.exit(0)
 
 signal_detector = SignalReceiver()
-call_backup = Backup(name="thiago")
+
+call_backup = Backup(name="roundabout")
 call_backup.check_if_destination_folder_exists()
 while True:
     call_backup.trigger()
