@@ -18,7 +18,7 @@ except FileNotFoundError:
     backup_path_folder = None
     map_folder_name = None
     backup_frequency = None
-
+#It will try to open the parameters and in case it does not find the file, initiates the variables with None.
 
 class Backup:
 
@@ -89,7 +89,7 @@ call_backup = Backup(name="roundabout")
 call_backup.check_if_destination_folder_exists()
 while True:
     call_backup.trigger()
-    time.sleep(60)
+    time.sleep(backup_frequency)
 
 
 
