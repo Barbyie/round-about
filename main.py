@@ -33,26 +33,20 @@ class Backup:
                     compress = f"tar -czvf {self.destination}/{self.name}-{time_instance.formatted_time} {self.origin}"
                     compress_exec = subprocess.run(compress, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                                text=True, check=True)
-                    print(f"Backup created successfully at {time_instance.formatted_time}")
                     self.log.create_logs(f"Backup created successfully at {time_instance.formatted_time}")
                 except subprocess.CalledProcessError as error_message:
-                    print("Backup creation failed with error:\n", error_message.stderr)
                     self.log.create_logs("Backup creation failed with error:\n", error_message.stderr)
     def check_if_destination_folder_exists(self):
         if os.path.exists(self.destination):
-            print("Backup folder already exists.")
+
             self.log.create_logs("Backup folder already exists.")
         else:
-            print("Backup folder does not exist yet, creating it.")
             self.log.create_logs("Backup folder does not exist, creating it.")
             try:
                 os.makedirs(self.destination)
-                print("Backup folder created successfully.")
                 self.log.create_logs("Backup folder created successfully.")
             except OSError as error:
-                print(f"Failed to create the folder with the error:\n{error}")
                 self.log.create_logs(f"Failed to create the folder with the error:\n{error}")
-                print("Exiting the program.")
                 self.log.create_logs("Exiting the program.")
                 sys.exit(1)
 
@@ -79,7 +73,6 @@ class SignalReceiver:
         signal.signal(signal.SIGINT, self.sigterm_handler)
     def sigterm_handler(self, signum, frame):
         self.log = Logs()
-        print("Received EXIT signal. Exiting the program.")
         self.log.create_logs("Received EXIT signal. Exiting the program.")
         sys.exit(0)
 
@@ -90,6 +83,3 @@ call_backup.check_if_destination_folder_exists()
 while True:
     call_backup.trigger()
     time.sleep(backup_frequency)
-
-
-
